@@ -13,30 +13,30 @@ class Manager(QCog):
 
     async def cog_check(self, ctx):
         """only bot managers may use this cog"""
-        is_owner = ctx.author.id == self.client.appinfo.owner
-        is_manager = ctx.author.id in self.client.config.managers or not self.client.config.managers
+        is_owner = ctx.author.id == self.bot.appinfo.owner
+        is_manager = ctx.author.id in self.bot.config.managers or not self.bot.config.managers
         return is_owner or is_manager
 
     @commands.command(aliases=["logout"])
     async def shutdown(self, ctx):
-        """log client out of discord"""
-        await ctx.reply(f"{self.client.user} shut down at {dt.now()}.")
-        await self.client.close()
+        """log bot out of discord"""
+        await ctx.reply(f"{self.bot.user} shut down at {dt.now()}.")
+        await self.bot.close()
 
     @commands.command()
     async def load(self, ctx, cog: str = "all"):
         """load an unloaded cog, or all cogs"""
-        await self.handle_cog(ctx, self.client.load_extension, cog)
+        await self.handle_cog(ctx, self.bot.load_extension, cog)
 
     @commands.command(aliases=["ul"])
     async def unload(self, ctx, cog: str = "all"):
         """unload a loaded cog, or all cogs"""
-        await self.handle_cog(ctx, self.client.unload_extension, cog)
+        await self.handle_cog(ctx, self.bot.unload_extension, cog)
 
     @commands.command(aliases=["rl"])
     async def reload(self, ctx, cog: str = "all"):
         """reload a loaded cog, or all cogs"""
-        await self.handle_cog(ctx, self.client.reload_extension, cog)
+        await self.handle_cog(ctx, self.bot.reload_extension, cog)
 
     @commands.command(aliases=["dm"])
     async def message(self, ctx, user: discord.User, *, msg: str):
@@ -48,7 +48,8 @@ class Manager(QCog):
 
         await ctx.reply(f"Sent message to **{user}**.")
 
-    async def handle_cog(self, ctx, func: Callable, cog: str = "all"):
+    @staticmethod
+    async def handle_cog(ctx, func: Callable, cog: str = "all"):
         cog = cog.lower()
 
         func_name = {
@@ -57,9 +58,7 @@ class Manager(QCog):
             "load_extension": "load"
         }[func.__name__]  # get proper function name to use it like a verb
 
-        embed = discord.Embed(
-            color = discord.Color.blue()
-        )
+        embed = discord.Embed(color=discord.Color.blue())
 
         if cog == "all":
             message = []
@@ -91,5 +90,5 @@ class Manager(QCog):
         await ctx.reply("bar")
 
 
-def setup(client: discord.Client):
-    client.add_cog(Manager(client))
+def setup(bot: discord.Bot):
+    bot.add_cog(Manager(bot))

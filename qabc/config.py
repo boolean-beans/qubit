@@ -11,5 +11,5 @@ class Config:
     cooldown_rate: int = 5
 
     def __post__init__(self):
-        # TODO: initialze config from database
+        # TODO: initialize config from database
         pass

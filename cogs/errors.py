@@ -37,9 +37,15 @@ class Errors(QCog):
                 return
             del_after = 5
             embed.description = f"You are on cooldown. Try again in __**{cause.retry_after:.2f}**__ seconds."
+        elif isinstance(cause, commands.MissingRequiredArgument):
+            embed.description = f"Missing argument `{error.param}` is required."
         else:
             embed.title = "Unhandled exception"
-            embed.description = cb(f"- {cause.__class__.__name__} ({error.__class__.__name__}): {error}", lang="diff")
+            embed.description = cb(
+                f"- Error name: {cause.__class__.__name__} ({error.__class__.__name__})",
+                f"- Error: {error}",
+                lang="yaml"
+            )
 
         await ctx.reply(embed=embed, delete_after=del_after)
 
@@ -49,7 +55,7 @@ class Errors(QCog):
 
         if uid in self.cd_cache:
             delta = dt.now() - self.cd_cache[uid]
-            if delta.seconds < self.client.config.cd_rate:
+            if delta.seconds < self.bot.config.cd_rate:
                 return False
 
         self.cd_cache[uid] = dt.now()
@@ -58,7 +64,7 @@ class Errors(QCog):
             to_delete = []
             for key, value in self.cd_cache.items():
                 delta = dt.now() - value
-                if delta.seconds > self.client.config.cd_rate:
+                if delta.seconds > self.bot.config.cd_rate:
                     to_delete.append(key)
 
             for key in to_delete:
@@ -67,5 +73,5 @@ class Errors(QCog):
         return True
 
 
-def setup(client):
-    client.add_cog(Errors(client))
+def setup(bot: discord.Bot):
+    bot.add_cog(Errors(bot))
