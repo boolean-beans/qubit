@@ -4,10 +4,9 @@ from abc import ABC
 import discord
 
 from datetime import datetime as dt
-from typing import List
+from typing import List, Optional
 from discord.ext import commands
 from qabc.config import Config
-from qabc.exc import QubitBaseException
 
 
 class Qubit(commands.Bot, ABC):
@@ -21,11 +20,6 @@ class Qubit(commands.Bot, ABC):
         self.config = Config()
         self.appinfo = None
         self.load_extensions()
-
-    @property
-    def prefixes(self) -> List[str]:
-        """bot command prefix[es]"""
-        return ["q."]
 
     def load_extensions(self):
         """load all available cogs"""
@@ -43,3 +37,12 @@ class Qubit(commands.Bot, ABC):
 
         if self.appinfo is None:
             self.appinfo = await self.application_info()
+
+    @property
+    def logging_channel(self) -> Optional[discord.TextChannel]:
+        return self.get_channel(self.config.logging_channel)
+
+    @property
+    def prefixes(self) -> List[str]:
+        """bot command prefix[es]"""
+        return ["q."]
