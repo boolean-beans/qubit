@@ -40,12 +40,29 @@ class Errors(QCog):
         elif isinstance(cause, commands.MissingRequiredArgument):
             embed.description = f"Missing argument `{error.param}` is required."
         else:
-            embed.title = "Unhandled exception"
-            embed.description = cb(
-                f"- Error name: {cause.__class__.__name__} ({error.__class__.__name__})",
-                f"- Error: {error}",
-                lang="yaml"
+            error_log_embed = discord.Embed(
+                title=f"{cause.__class__.__name__} ({error.__class__.__name__})",
+                description=cb(
+                    f"- Command: {ctx.message.content}",
+                    f"- Error: '{error}'",  # TODO: verbose error message
+                    lang="yaml",
+                    end="\n-----\n"
+                 ),
             )
+
+            error_log_embed.set_author(name=f"Invoked by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+            if ctx.author.id in self.bot.config.managers:
+                embed = error_log_embed
+            else:
+                embed.title = f"Error in command `{ctx.command.name}`"
+                embed.description = "Unfortunately, something has gone wrong. The issue has been reported to the " \
+                                    "developers."
+
+                if chnl := self.bot.logging_channel:
+                    await chnl.send(embed=error_log_embed)
+                else:
+                    await ctx.send(embed=error_log_embed)
 
         await ctx.reply(embed=embed, delete_after=del_after)
 
@@ -55,7 +72,7 @@ class Errors(QCog):
 
         if uid in self.cd_cache:
             delta = dt.now() - self.cd_cache[uid]
-            if delta.seconds < self.bot.config.cd_rate:
+            if delta.seconds < self.bot.config.cooldown_rate:
                 return False
 
         self.cd_cache[uid] = dt.now()
@@ -64,7 +81,7 @@ class Errors(QCog):
             to_delete = []
             for key, value in self.cd_cache.items():
                 delta = dt.now() - value
-                if delta.seconds > self.bot.config.cd_rate:
+                if delta.seconds > self.bot.config.cooldown_rate:
                     to_delete.append(key)
 
             for key in to_delete:
