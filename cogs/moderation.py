@@ -12,19 +12,22 @@ class Moderation(QCog):
 
     async def cog_check(self, ctx):
         """only staff may use this cog, and only in a server"""
-        is_staff = self.client.config.staff_role in map((lambda r: r.id), ctx.author.roles)
-        return is_staff and not ctx.guild is None
+        if ctx.guild is None:
+            return False
+
+        is_staff = self.bot.config.staff_role in map((lambda r: r.id), ctx.author.roles)
+        return is_staff and ctx.guild is not None
 
     @commands.command()
     @commands.has_permissions(manage_nicknames=True)
     async def setnick(self, ctx, member: discord.Member, *, nick: Optional[str] = None):
         """set a target member's nickname, or clear it"""
-        if member.top_role >= author.top_role:
+        if member.top_role >= ctx.author.top_role:
             raise HierarchyError("You cannot modify this user's nickname.")
 
         embed = discord.Embed(
             description=f"Updated **{member}**'s nickname: `{member.display_name} -> {nick}`",
-            color = discord.Color.blue()
+            color=discord.Color.blue()
         )
 
         await member.edit(nick=nick)
@@ -37,7 +40,8 @@ class Moderation(QCog):
             raise HierarchyError("You cannot modify this user's roles.")
 
         if role >= ctx.author.top_role:
-            raise HierarchyError("This role is equal to or higher than your highest rank, and cannot be assigned or removed by you.")
+            raise HierarchyError("This role is equal to or higher than your highest rank, and cannot be assigned or "
+                                 "removed by you.")
 
         await member.add_roles(role)
         await ctx.reply(f"Added `{role.name}` to **{member}**.")
@@ -49,7 +53,8 @@ class Moderation(QCog):
             raise HierarchyError("You cannot modify this user's roles.")
 
         if role >= ctx.author.top_role:
-            raise HierarchyError("This role is equal to or higher than your highest rank, and cannot be assigned or removed by you.")
+            raise HierarchyError("This role is equal to or higher than your highest rank, and cannot be assigned or "
+                                 "removed by you.")
 
         await member.remove_roles(role)
         await ctx.reply(f"Removed `{role.name}` to **{member}**.")
@@ -67,11 +72,7 @@ class Moderation(QCog):
 
         await ctx.guild.ban(discord.Object(id=user.id))
 
-        embed = discord.Embed(
-            title = "Reason:",
-            description = reason,
-            color = discord.Color.red(),
-        )
+        embed = discord.Embed(title="Reason:", description=reason, color=discord.Color.red())
 
         embed.set_author(name=f"{user} banned", icon_url=user.avatar.url)
         embed.set_footer(text=f"Banned by {ctx.author}\nUID: {user.id}")
@@ -89,12 +90,7 @@ class Moderation(QCog):
 
         await member.kick(reason=reason)
 
-        embed = discord.Embed(
-            title = "Reason:",
-            description = reason,
-            color = discord.Color.random(seed=member.id),
-        )
-
+        embed = discord.Embed(title="Reason:", description=reason, color=discord.Color.random(seed=member.id))
         embed.set_author(name=f"{member} kicked", icon_url=member.avatar.url)
         embed.set_footer(text=f"Kicked by {ctx.author}\nUID: {member.id}")
         await ctx.send(embed=embed)
@@ -111,5 +107,5 @@ class Moderation(QCog):
         await ctx.reply(f"Unbanned `{user} ({user.id})`.")
 
 
-def setup(client: discord.Client):
-    client.add_cog(Moderation(client))
+def setup(bot: discord.Bot):
+    bot.add_cog(Moderation(bot))

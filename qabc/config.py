@@ -9,7 +9,8 @@ class Config:
     managers: List[int] = field(default_factory=list)
     staff_role: int = -1
     cooldown_rate: int = 5
+    logging_channel: int = -1
 
     def __post__init__(self):
-        # TODO: initialze config from database
+        # TODO: initialize config from database
         pass
