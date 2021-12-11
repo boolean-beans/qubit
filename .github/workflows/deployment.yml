@@ -26,7 +26,6 @@ jobs:
 
           script: |
             cd Projects/qubit/
-            git config pull.rebase false
-            git pull -q
+            git pull
             bash ./scripts/autostart.sh
             echo "[SUCCESS] Deployed QUBIT to Digital Ocean!"
