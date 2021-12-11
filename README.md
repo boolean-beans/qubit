@@ -1,4 +1,5 @@
 <div id="top"></div>
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -59,4 +60,4 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 [issues-shield]: https://img.shields.io/github/issues/boolean-beans/qubit.svg?style=for-the-badge
 [issues-url]: https://github.com/boolean-beans/qubit/issues
 [license-shield]: https://img.shields.io/github/license/boolean-beans/qubit.svg?style=for-the-badge
-[license-url]: https://github.com/boolean-beans/qubit/blob/master/LICENSE.txt
+[license-url]: https://github.com/boolean-beans/qubit/blob/master/LICENSE
