@@ -48,6 +48,42 @@ class Manager(QCog):
 
         await ctx.reply(f"Sent message to **{user}**.")
 
+    @commands.group(aliases=["set"])
+    async def setconfig(self, ctx):
+        """set a configuration setting to a new value"""
+        if ctx.invoked_subcommand is None:
+            await ctx.reply("Set a configuration setting to a new value. Available settings are:\n" + cb(
+                f"[-]: staffrole  | Set staff role.       Current: {self.bot.config.staff_role}",
+                f"[-]: logchannel | Set log channel.      Current: {self.bot.config.logging_channel}",
+                f"[-]: mprole     | Set media perms role. Current: {self.bot.config.media_perms_role}",
+                f"[-]: muterole   | Set mute role.        Current: {self.bot.config.mute_role}",
+                lang="md"
+            ))
+
+    @setconfig.command()
+    async def staffrole(self, ctx, role: discord.Role):
+        """set the staff role to a new role"""
+        await ctx.reply(f"Updated staff role: `{self.bot.config.staff_role} -> {role.id}`")
+        self.bot.config.staff_role = role.id
+
+    @setconfig.command()
+    async def mprole(self, ctx, role: discord.Role):
+        """set the media perms role to a new role"""
+        await ctx.reply(f"Updated media perms role: `{self.bot.config.media_perms_role} -> {role.id}`")
+        self.bot.config.media_perms_role = role.id
+
+    @setconfig.command()
+    async def muterole(self, ctx, role: discord.Role):
+        """set the media perms role to a new role"""
+        await ctx.reply(f"Updated mute role: `{self.bot.config.mute_role} -> {role.id}`")
+        self.bot.config.mute_role = role.id
+
+    @setconfig.command()
+    async def logchannel(self, ctx, channel: discord.TextChannel):
+        """set the logging channel to a new channel"""
+        await ctx.reply(f"Updated logging channel: `{self.bot.config.logging_channel} -> {channel.id}`")
+        self.bot.config.logging_channel = channel.id
+
     @staticmethod
     async def handle_cog(ctx, func: Callable, cog: str = "all"):
         cog = cog.lower()
