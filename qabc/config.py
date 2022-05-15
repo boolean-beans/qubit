@@ -8,7 +8,9 @@ class Config:
 
     managers: List[int] = field(default_factory=list)
     staff_role: int = -1
-    cooldown_rate: int = 5
+    media_perms_role: int = -1
+    mute_role: int = -1
+    skid_role: int = -1
     logging_channel: int = -1
 
     def __post__init__(self):

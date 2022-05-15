@@ -1,6 +1,10 @@
 import os
+<<<<<<< Updated upstream
 from abc import ABC
 
+=======
+import abc
+>>>>>>> Stashed changes
 import discord
 
 from datetime import datetime as dt
@@ -9,7 +13,11 @@ from discord.ext import commands
 from qabc.config import Config
 
 
+<<<<<<< Updated upstream
 class Qubit(commands.Bot, ABC):
+=======
+class Qubit(commands.Bot, abc.ABC):
+>>>>>>> Stashed changes
     """custom Bot class"""
 
     def __init__(self, *args, load_jsk: bool = True, **kwargs):
@@ -17,6 +25,7 @@ class Qubit(commands.Bot, ABC):
         super().__init__(*args, **kwargs)
         self.command_prefix = commands.when_mentioned_or(*self.prefixes)
         self.load_jsk = load_jsk
+        self.appinfo = None
         self.config = Config()
         self.appinfo = None
         self.load_extensions()

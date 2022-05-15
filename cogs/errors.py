@@ -13,6 +13,7 @@ class Errors(QCog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cd_cache = {}
+        self.cooldown_rate = 5  # seconds
 
     @QCog.listener()
     async def on_command_error(self, ctx, error):
@@ -70,18 +71,20 @@ class Errors(QCog):
         """return whether or not to respond to a cooldown error,
            so as to prevent spamming, and therefore no rate limits"""
 
+        now = dt.now()
+
         if uid in self.cd_cache:
-            delta = dt.now() - self.cd_cache[uid]
-            if delta.seconds < self.bot.config.cooldown_rate:
+            delta = now - self.cd_cache[uid]
+            if delta.seconds < self.cooldown_rate:
                 return False
 
-        self.cd_cache[uid] = dt.now()
+        self.cd_cache[uid] = now
 
         if len(self.cd_cache) > 50:  # if more than 50 entries exist, delete old ones
             to_delete = []
             for key, value in self.cd_cache.items():
-                delta = dt.now() - value
-                if delta.seconds > self.bot.config.cooldown_rate:
+                delta = now - value
+                if delta.seconds > self.cooldown_rate:
                     to_delete.append(key)
 
             for key in to_delete:

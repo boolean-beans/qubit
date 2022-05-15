@@ -12,10 +12,14 @@ class Moderation(QCog):
 
     async def cog_check(self, ctx):
         """only staff may use this cog, and only in a server"""
+<<<<<<< Updated upstream
         if ctx.guild is None:
             return False
 
         is_staff = self.bot.config.staff_role in map((lambda r: r.id), ctx.author.roles)
+=======
+        is_staff = self.client.config.staff_role in map((lambda r: r.id), ctx.author.roles)
+>>>>>>> Stashed changes
         return is_staff and ctx.guild is not None
 
     @commands.command()
@@ -36,6 +40,9 @@ class Moderation(QCog):
     @commands.command(aliases=["ar"])
     async def addrole(self, ctx, member: discord.Member, *, role: discord.Role):
         """add a role to a target member"""
+        if isinstance(role, int):
+            role = ctx.guild.get_role(role)
+
         if member.top_role >= ctx.author.top_role:
             raise HierarchyError("You cannot modify this user's roles.")
 
@@ -49,6 +56,9 @@ class Moderation(QCog):
     @commands.command(aliases=["rr"])
     async def removerole(self, ctx, member: discord.Member, *, role: discord.Role):
         """remove a role from a target member"""
+        if isinstance(role, int):
+            role = ctx.guild.get_role(role)
+
         if member.top_role >= ctx.author.top_role:
             raise HierarchyError("You cannot modify this user's roles.")
 
@@ -58,6 +68,21 @@ class Moderation(QCog):
 
         await member.remove_roles(role)
         await ctx.reply(f"Removed `{role.name}` to **{member}**.")
+
+    @commands.command(name="mediaperms", aliases=["mp"])
+    async def assign_media_perms(self, ctx, *, member: discord.Member):
+        """give a member the media perms role"""
+        await self.addrole(ctx, member, role=self.bot.config.media_perms_role)
+
+    @commands.command(name="mute", aliases=["stfu"])
+    async def assign_mute(self, ctx, *, member: discord.Member):
+        """mute a given member"""
+        await self.addrole(ctx, member, role=self.bot.config.mute_role)
+
+    @commands.command(name="skid")
+    async def assign_skid(self, ctx, *, member: discord.Member):
+        """assign the skid role to a given member"""
+        await self.addrole(ctx, member, role=self.bot.config.skid_role)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
