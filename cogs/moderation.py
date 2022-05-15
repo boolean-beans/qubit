@@ -12,10 +12,14 @@ class Moderation(QCog):
 
     async def cog_check(self, ctx):
         """only staff may use this cog, and only in a server"""
+<<<<<<< Updated upstream
         if ctx.guild is None:
             return False
 
         is_staff = self.bot.config.staff_role in map((lambda r: r.id), ctx.author.roles)
+=======
+        is_staff = self.client.config.staff_role in map((lambda r: r.id), ctx.author.roles)
+>>>>>>> Stashed changes
         return is_staff and ctx.guild is not None
 
     @commands.command()
